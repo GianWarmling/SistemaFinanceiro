@@ -41,17 +41,12 @@ namespace SistemaFinanceiro.Controllers
 
         // POST api/<UsuariosController>
         [HttpPost]
-        public async Task<IActionResult> CriarUsuario(int id, [FromBody] Usuario usuario)
+        public async Task<IActionResult> CriarUsuario([FromBody] Usuario usuario)
         {
-            var usuarioDb = await _context.Usuarios.FindAsync(id);
-            if (usuarioDb == null)
-            {
-                return NotFound("Usuário não encontrado!");
-            }
-            usuarioDb.Nome = usuario.Nome;
-            usuarioDb.Email = usuario.Email;
+            _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
-            return Ok(usuarioDb);
+
+            return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id }, usuario);
         }
 
         // PUT api/<UsuariosController>/5

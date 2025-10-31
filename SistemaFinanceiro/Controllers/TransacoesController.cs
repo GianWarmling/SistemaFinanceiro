@@ -19,19 +19,19 @@ namespace SistemaFinanceiro.Controllers
         [HttpPost]
         public async Task<IActionResult> CriarTransacao([FromBody] Transacao transacao)
         {
-            // Verifica se a conta existe
             var conta = await _context.Contas.FindAsync(transacao.ContaId);
             if (conta == null)
+            {
                 return NotFound(new { mensagem = "Conta não encontrada" });
+            }
 
-            // Valida saldo para débito
             if (transacao.Tipo == TipoTransacao.Debito && conta.Saldo < transacao.Valor)
+            {
                 return BadRequest(new { mensagem = "Saldo insuficiente" });
+            }
 
-            // Atualiza saldo da conta
             conta.Saldo += transacao.Tipo == TipoTransacao.Credito ? transacao.Valor : -transacao.Valor;
 
-            // Adiciona a transação no banco
             _context.Transacoes.Add(transacao);
             await _context.SaveChangesAsync();
 
